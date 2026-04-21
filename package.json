@@ -1,0 +1,29 @@
+{
+  "name": "antigravity-auto-accept-logan",
+  "displayName": "Logan Bot: Auto Accept",
+  "description": "Automatically clicks Accept, Allow, and Run buttons in Antigravity.",
+  "version": "1.0.0",
+  "publisher": "logan",
+  "engines": {
+    "vscode": "^1.90.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [],
+  "main": "./extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "logan-bot.toggle",
+        "title": "Toggle Logan Bot"
+      }
+    ]
+  },
+  "scripts": {
+    "postinstall": "npm install ws"
+  },
+  "dependencies": {
+    "ws": "^8.16.0"
+  }
+}
