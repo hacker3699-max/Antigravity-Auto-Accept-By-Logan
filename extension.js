@@ -40,39 +40,30 @@ async function startMacro() {
         socket.on('open', () => {
             const macroCode = `
                 if (window.myTimer) clearInterval(window.myTimer);
+                console.log("%c[LoganBot] 로건봇 매크로가 실행되었습니다. (V2)", "color: #00ff00; font-weight: bold;");
                 window.myTimer = setInterval(() => {
-                    const ts = document.querySelectorAll("button, [role='button'], .monaco-button, .btn, a, div, span");
+                    const ts = document.querySelectorAll("button, [role='button'], .monaco-button, a, .btn");
                     ts.forEach(el => {
                         if (el.closest('.quick-input-widget') || el.closest('.sidebar') || el.closest('.activitybar')) return;
 
                         const style = window.getComputedStyle(el);
-                        if (style.cursor !== 'pointer' && el.tagName !== 'BUTTON') return;
-
                         const txt = (el.textContent || "").trim().toLowerCase();
                         const aria = (el.ariaLabel || "").trim().toLowerCase();
                         const title = (el.title || "").trim().toLowerCase();
                         
-                        const keywords = ["accept all", "accept", "accept changes", "run", "allow", "yes", "수락", "허용", "실행"];
+
+                        // 2. 허용 키워드
+                        const keywords = ["accept all", "accept", "accept changes", "allow", "apply"];
                         const isKeywordMatched = keywords.some(k => 
-                            (txt === k || (txt.includes(k) && txt.length < 20)) ||
-                            (aria === k || (aria.includes(k) && aria.length < 25)) ||
-                            (title === k || (title.includes(k) && title.length < 25))
+                            txt === k || aria === k || (txt.includes(k) && txt.length < 15)
                         );
 
                         if (!isKeywordMatched) return;
 
-                        const bgColor = style.backgroundColor;
-                        const isBlueBg = (() => {
-                            const match = bgColor.match(/\\d+/g);
-                            if (!match) return false;
-                            const [r, g, b] = match.map(Number);
-                            return b > r && b > g && b > 100;
-                        })();
-
-                        if (el.offsetWidth > 0 && txt.length > 1 && !txt.includes('logan')) {
-                            if (isBlueBg || !el.closest('.chat-panel') || (txt.includes('accept') && txt.length < 15)) {
-                                el.click();
-                            }
+                        // 3. 필터링 및 클릭 (가시성 및 중복 방지)
+                        if (el.offsetWidth > 0 && !txt.includes('logan')) {
+                            console.log("%c[LoganBot] Click Target Found:", "color: #3498db;", txt || aria || "No Text", el);
+                            el.click();
                         }
                     });
                 }, 1000);
@@ -97,7 +88,7 @@ async function stopMacro() {
                 stopSocket.close();
             });
         }
-    } catch (e) {}
+    } catch (e) { }
     currentState = 'STOP';
     updateStatusBar();
 }
